@@ -2418,6 +2418,29 @@ status_t Camera3Device::configureStreamsLocked(int operatingMode,
         return BAD_VALUE;
     }
 
+    sp<VendorTagDescriptor> vTags;
+    sp<VendorTagDescriptorCache> vCache = VendorTagDescriptorCache::getGlobalVendorTagCache();
+    const std::string pkgName = CameraService::getCurrPackageName();
+
+    if (vCache) {
+        const camera_metadata_t* metaBuffer = sessionParams.getAndLock();
+        metadata_vendor_id_t vendorId = get_camera_metadata_vendor_id(metaBuffer);
+        sessionParams.unlock(metaBuffer);
+
+        vCache->getVendorTagDescriptor(vendorId, &vTags);
+        
+        uint32_t tag;
+        if (CameraMetadata::getTagFromName(String8(pkgName.c_str()), vTags.get(), &tag)) {
+            ALOGE("%s: Unable to get %s tag", __FUNCTION__, pkgName.c_str());
+        } else {
+            status_t res = const_cast<CameraMetadata&>(sessionParams).update(tag, String8(pkgName.c_str()));
+            if (res) {
+                ALOGE("%s: metadata update failed, res = %d", __FUNCTION__, res);
+            }
+        }
+    }
+
+
     bool isConstrainedHighSpeed =
             CAMERA_STREAM_CONFIGURATION_CONSTRAINED_HIGH_SPEED_MODE == operatingMode;
 
