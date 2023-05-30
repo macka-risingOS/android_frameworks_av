@@ -37,7 +37,10 @@ license {
 
 cc_library_shared {
     name: "libcameraservice",
-    defaults: ["needs_camera_boottime_defaults",],
+    defaults: [
+        "needs_camera_boottime_defaults",
+        "includes_miui_camera",
+    ],
 
     // Camera service source
 
