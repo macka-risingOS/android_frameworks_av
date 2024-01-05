@@ -1651,6 +1651,9 @@ status_t CCodecBufferChannel::start(
                 if (delay || padding) {
                     // We need write access to the buffers, and we're already in
                     // array mode.
+                    if (!output->buffers->isArrayMode()) {
+                        output->buffers = output->buffers->toArrayMode(numOutputSlots);
+                    }
                     output->buffers->initSkipCutBuffer(delay, padding, sampleRate, channelCount);
                 }
             }
