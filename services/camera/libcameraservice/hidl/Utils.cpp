@@ -87,13 +87,7 @@ hardware::camera2::params::OutputConfiguration convertFromHidl(
     auto &windowHandles = hOutputConfiguration.windowHandles;
     iGBPs.reserve(windowHandles.size());
     for (auto &handle : windowHandles) {
-        auto igbp = AImageReader_getHGBPFromHandle(handle);
-        if (igbp == nullptr) {
-            ALOGE("%s: Could not get HGBP from native_handle: %p. Skipping.",
-                    __FUNCTION__, handle.getNativeHandle());
-            continue;
-        }
-        iGBPs.push_back(new H2BGraphicBufferProducer(igbp));
+        iGBPs.push_back(new H2BGraphicBufferProducer(AImageReader_getHGBPFromHandle(handle)));
     }
     String16 physicalCameraId16(hOutputConfiguration.physicalCameraId.c_str());
     hardware::camera2::params::OutputConfiguration outputConfiguration(

@@ -77,13 +77,7 @@ UOutputConfiguration convertFromAidl(const SOutputConfiguration &src) {
 
     for (auto &handle : windowHandles) {
         native_handle_t* nh = makeFromAidl(handle);
-        auto igbp = AImageReader_getHGBPFromHandle(nh);
-        if (igbp == nullptr) {
-            ALOGE("%s: Could not get HGBP from NativeHandle: %s. Skipping.",
-                    __FUNCTION__, handle.toString().c_str());
-            continue;
-        }
-        iGBPs.push_back(new H2BGraphicBufferProducer(igbp));
+        iGBPs.push_back(new H2BGraphicBufferProducer(AImageReader_getHGBPFromHandle(nh)));
         native_handle_delete(nh);
     }
     String16 physicalCameraId16(src.physicalCameraId.c_str());
